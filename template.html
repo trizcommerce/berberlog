@@ -353,6 +353,10 @@ details.fold[open] summary::after{transform:rotate(-135deg);margin-top:4px}
 .op-bars div{display:grid;grid-template-columns:100px 1fr 28px;gap:8px;align-items:center;font-size:13px}
 .op-bars span.b{height:10px;border-radius:5px;background:var(--accent);opacity:.85}
 .op-bars em{font-style:normal;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.op-upd{margin:2px 2px 8px;font-size:11.5px;color:var(--muted)}
+.op-tag{flex:none;height:20px;padding:0 8px;border-radius:999px;font-size:11px!important;font-weight:700;display:inline-flex;align-items:center}
+.op-tag.new{background:var(--accent);color:var(--accent-ink)!important}
+.op-tag.up{background:color-mix(in srgb,var(--sun) 18%,transparent);color:var(--sun)!important}
 .op-who{margin:0;padding-left:18px;font-size:14px;line-height:1.7;word-break:keep-all}
 .op-who li+li{margin-top:4px}
 .op-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
@@ -1194,6 +1198,7 @@ function openHelp() { // 캘린더마다 있는 기능만 골라서 설명
     ${OPINION ? sec("💬 댓글 여론", [
       `화면 아래 <b>댓글 여론</b> 메뉴에서 최근 3개월 게시물에 달린 팔로워 댓글을 한눈에 정리해 볼 수 있어요.`,
       `<b>한눈에 보기 · 주의 신호 · 좋아하는 점 · 자주 묻는 질문 · 요청</b> 순서로 보여드려요.`,
+      `<b>매월 초</b>에 새로 정리되고, 지난달과 비교해 새로 생기거나 더 짙어진 여론은 맨 위 <b>🆕 지난달 대비 달라진 여론</b>에 따로 표시돼요.`,
       `맨 아래 <b>게시물별 댓글 요약</b>에서 일상 · 레시피 · 공구 · 이벤트별로 골라 보고, 눌러서 펼치면 그 게시물 댓글 요약과 원본 게시물 링크가 나와요.`
     ]) : ""}
     ${sec("🔔 휴대폰 알림 받기", [
@@ -1681,13 +1686,20 @@ function renderOpinion() {
   const sec = (title, sub, body) => `<section class="op-sec"><h3>${title}${sub ? `<small>${sub}</small>` : ""}</h3>${body}</section>`;
   const card = (t, d, extra = "") => `<div class="op-card"><b>${escRaw(t)}</b><p>${escRaw(d)}</p>${extra}</div>`;
   const total = O.mood.reduce((n, m) => n + m.v, 0);
-  const maxF = Math.max(...O.flavors.v.map(x => x[1]));
+  const maxF = O.flavors ? Math.max(...O.flavors.v.map(x => x[1])) : 1;
+  const ymd = x => x.replace(/-/g, ".");
+  const ch = O.changes || {}, chItem = (x, tag) => `<div class="op-card"><div class="op-head"><b>${escRaw(x.t)}</b><span class="op-tag ${tag === "NEW" ? "new" : "up"}">${tag}</span></div><p>${escRaw(x.d)}</p>${x.src ? `<span class="src2">근거: ${escRaw(x.src)}</span>` : ""}</div>`;
+  const chBody = (ch.new || []).length || (ch.deeper || []).length
+    ? (ch.new || []).map(x => chItem(x, "NEW")).join("") + (ch.deeper || []).map(x => chItem(x, "심화")).join("")
+    : `<div class="op-card"><p style="color:var(--muted);font-size:13px">${ch.since ? "지난 정리와 비교해 새로 생기거나 짙어진 여론은 없었어요." : "다음 달 초 업데이트부터 지난 정리와 비교해 새로 생기거나 더 짙어진 여론을 여기에 따로 보여드려요."}</p></div>`;
   const kinds = ["전체", ...new Set(O.posts.map(p => p.kind))];
   $("#op-scroll").innerHTML = `
+    <p class="op-upd">최근 업데이트 ${ymd(O.at)} · 매월 초에 업데이트돼요</p>
     <div class="hero" style="--c:var(--accent)"><span class="swatch"></span>
       <h2>팔로워는 이렇게 말해요</h2>
       <div class="full">${md(O.from)}~${md(O.to)} 게시물 ${O.count}개 · 팔로워 댓글 ${O.read.toLocaleString()}개를 직접 읽고 정리했어요</div>
       <p class="idea-intro" style="margin-top:8px">${escRaw(O.note)} ${md(O.at)} 정리.</p></div>
+    ${sec("🆕 지난달 대비 달라진 여론", ch.since ? `${md(ch.since)} 정리와 비교해 최근 한 달 새로 보이거나 더 짙어진 여론이에요` : "", chBody)}
     ${sec("한눈에 보기", "", `<ol class="op-hl">${O.headline.map(h => `<li>${escRaw(h)}</li>`).join("")}</ol>`)}
     ${sec("댓글 분위기", escRaw(O.moodNote), `<div class="op-card"><div class="op-stack" role="img" aria-label="${escRaw(O.mood.map(m => `${m.k} ${m.v}%`).join(", "))}">${O.mood.map(m => `<i style="--c:${m.c};width:${m.v / total * 100}%"></i>`).join("")}</div>
       <div class="op-legend">${O.mood.map(m => `<div style="--c:${m.c}"><i></i><span>${escRaw(m.k)}</span><em>${m.v}%</em><small>${escRaw(m.ex)}</small></div>`).join("")}</div></div>`)}
@@ -1697,7 +1709,7 @@ function renderOpinion() {
     ${sec("🙋 팔로워 요청", "", O.wants.map(w => card(w.t, w.d)).join(""))}
     ${sec("📊 콘텐츠 유형별 반응", "", O.kinds.map(k => `<div class="op-card"><div class="op-head"><b>${escRaw(k.k)}</b><span>${escRaw(k.r)}</span></div><p>${escRaw(k.d)}</p></div>`).join(""))}
     ${sec("👥 어떤 팔로워인가요", "댓글에 직접 밝힌 상황 기준", `<div class="op-card"><ul class="op-who">${O.who.map(w => `<li>${escRaw(w)}</li>`).join("")}</ul></div>`)}
-    ${sec("🥤 스무디 맛 선호", escRaw(O.flavors.t), `<div class="op-card"><div class="op-bars">${O.flavors.v.map(([k, v]) => `<div><span>${escRaw(k)}</span><span class="b" style="width:${v / maxF * 100}%"></span><em>${v}</em></div>`).join("")}</div><p style="margin-top:10px;font-size:13px;color:var(--muted)">${escRaw(O.flavors.d)}</p></div>`)}
+    ${!O.flavors ? "" : sec((O.flavors.icon || "📊") + " " + escRaw(O.flavors.h || "선호 조사"), escRaw(O.flavors.t), `<div class="op-card"><div class="op-bars">${O.flavors.v.map(([k, v]) => `<div><span>${escRaw(k)}</span><span class="b" style="width:${v / maxF * 100}%"></span><em>${v}</em></div>`).join("")}</div><p style="margin-top:10px;font-size:13px;color:var(--muted)">${escRaw(O.flavors.d)}</p></div>`)}
     ${sec("💡 일상 콘텐츠 힌트", "댓글 반응에서 나온 기획 방향", `<ol class="op-hl">${O.ideas.map(h => `<li>${escRaw(h)}</li>`).join("")}</ol>`)}
     ${sec("🗂 게시물별 댓글 요약", `게시물 ${O.count}개 · 눌러서 펼쳐 보세요`, `<div class="op-chips" role="group" aria-label="게시물 종류">${kinds.map(k => `<button type="button" data-k="${escRaw(k)}" aria-pressed="${k === opFilter}">${escRaw(k)}${k === "전체" ? "" : ` ${O.posts.filter(p => p.kind === k).length}`}</button>`).join("")}</div><div id="op-posts"></div>`)}`;
   const list = () => {
