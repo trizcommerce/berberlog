@@ -1071,5 +1071,75 @@
   }
  ],
  "read": 2808,
- "count": 84
+ "count": 84,
+ "iq": {
+  "from": "2026-10-14",
+  "to": "2026-11-12",
+  "posts": 28,
+  "comments": 2327,
+  "entries": 492,
+  "counted": 1835,
+  "mood": {
+   "공감·응원": 981,
+   "질문": 432,
+   "구매·후기": 365,
+   "요청": 35,
+   "불만·우려": 22
+  },
+  "replies": {
+   "seller": 224,
+   "template": 0,
+   "users": 2287,
+   "got": 183
+  },
+  "questions": {
+   "total": 430,
+   "unanswered": 342,
+   "ops": 5,
+   "examples": [
+    {
+     "d": "11/12",
+     "post": "#공구open 온가족 건강은 플루니 스무디 한 팩으로✨",
+     "url": "https://www.instagram.com/p/Dfn0UnzHzWb/",
+     "q": "아토피 있는 초등 아이 입맛 까다로워 엄마가 만들어준 스무디 거부, 이것 저것 시도해도 매번 실패하는데 추천 부탁드려요"
+    },
+    {
+     "d": "11/12",
+     "post": "#공구open 온가족 건강은 플루니 스무디 한 팩으로✨",
+     "url": "https://www.instagram.com/p/Dfn0UnzHzWb/",
+     "q": "청소년비염에 제일 좋은 스무디가 뭘까요?"
+    },
+    {
+     "d": "11/11",
+     "post": "#공구d-1 스무디로 장건강 챙기고 면역 끌어올릴 준비 되셨나요오!!",
+     "url": "https://www.instagram.com/p/DfmbFAjH1_k/",
+     "q": "한가지 스무디만 계속 먹어도 되는 건지 궁금해요!"
+    },
+    {
+     "d": "10/20",
+     "post": "🌿 아르히 효소세안제 6+1 공구 오늘 OPEN!",
+     "url": "https://www.instagram.com/p/DeslwPGH31b/",
+     "q": "스킨케어3종은 구매 안될까요?"
+    },
+    {
+     "d": "10/19",
+     "post": "#공구예고 화장만 하면 입가 하얗게 들뜨고,",
+     "url": "https://www.instagram.com/p/DerNk5cH4hB/",
+     "q": "아토피에도 효소세안제 사용 괜찮을까요?"
+    },
+    {
+     "d": "10/19",
+     "post": "#공구예고 화장만 하면 입가 하얗게 들뜨고,",
+     "url": "https://www.instagram.com/p/DerNk5cH4hB/",
+     "q": "진짜 초민감 수부지인데 괜찮겠...죠?"
+    },
+    {
+     "d": "11/03",
+     "post": "✨우아하게 살고 싶은데요? ㅎㅎㅎ",
+     "url": "https://www.instagram.com/p/DfR1RuAH5vK/",
+     "q": "두분은 어떻게 만나셧을까요?궁금하네요👏👏"
+    }
+   ]
+  }
+ }
 }
